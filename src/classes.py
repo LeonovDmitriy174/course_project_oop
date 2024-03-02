@@ -109,15 +109,15 @@ class SaveInfoJson(AbstractClassFile, ABC):
     def __init__(self, vacancies):
         super().__init__(vacancies)
 
-    def add_vacancies_to_file(self):
-        with open('vacancies.json', 'w') as json_file:
+    def add_vacancies_to_file(self, file_name='vacancies.json'):
+        with open(file_name, 'w') as json_file:
             json.dump(self.vacancies, json_file)
 
-    def data_from_file(self):
-        with open('vacancies.json', 'r') as json_file:
+    def data_from_file(self, file_name='vacancies.json'):
+        with open(file_name, 'r') as json_file:
             file = json.load(json_file)
             return file
 
-    def del_info_about_vacancies(self):
-        with open('vacancies.json', 'w') as json_file:
-            json.dump(None, json_file)
+    def del_info_about_vacancies(self, file_name='vacancies.json'):
+        with open(file_name, 'r') as json_file:
+            json.dump('', json_file)
