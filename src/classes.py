@@ -1,13 +1,12 @@
 import requests
-from datetime import date
 from abc import ABC, abstractmethod
-
-"""from src.util import get_currency_rate"""
 import json
 
 
 class AbstractClassAPI(ABC):
-
+    """
+    Абстрактный класс-родитель для работы с разными площадками
+    """
     def __init__(self, url, user_vacancies):
         response = requests.get(
             f'{url}?per_page=100&text={user_vacancies}&order_by=relevance&currency=RUR')
@@ -15,30 +14,36 @@ class AbstractClassAPI(ABC):
 
 
 class Headhunter(AbstractClassAPI, ABC):
-
+    """
+    Класс для получения вакансий исключительно с сайта HeadHunter
+    """
     def __init__(self, user_vacancies, url='https://api.hh.ru/vacancies'):
         super().__init__(url, user_vacancies)
 
 
 class Vacancy:
+    """
+    Класс для работы с вакансией
+    """
     name = None
     employer = None
     url = None
     __salary = True
     requirement = None
     area = None
+    currency = 'RUR'
 
     def __init__(self, vacancies):
         try:
-            self.salary_to = vacancies['salary']['to']
             self.salary_from = vacancies['salary']['from']
         except TypeError:
             self.__salary = False
         else:
-            if self.salary_to is None or self.salary_from is None:
+            if self.salary_from is None:
                 self.__salary = False
             else:
                 self.salary_from = vacancies['salary']['from']
+                self.currency = vacancies['salary']['currency']
                 self.salary_to = vacancies['salary']['to']
         finally:
             self.name = vacancies['name']
@@ -66,18 +71,21 @@ class Vacancy:
 
     def __lt__(self, other):
         if isinstance(other, Vacancy) and self.__salary and other.__salary:
-            if self.salary_to + self.salary_from < other.salary_to + other.salary_from:
+            if self.salary_from < other.salary_from:
                 return True
         return False
 
     def __gt__(self, other):
         if isinstance(other, Vacancy) and self.__salary and other.__salary:
-            if self.salary_to + self.salary_from > other.salary_to + other.salary_from:
+            if self.salary_from > other.salary_from:
                 return True
         return False
 
 
 class AbstractClassFile(ABC):
+    """
+    Абстрактный класс-родитель для принудительного существования абстрактных методов в классах-наследниках
+    """
     def __init__(self, vacancies):
         self.vacancies = vacancies
 
@@ -95,6 +103,9 @@ class AbstractClassFile(ABC):
 
 
 class SaveInfoJson(AbstractClassFile, ABC):
+    """
+    Класс для работы с json-файлом
+    """
     def __init__(self, vacancies):
         super().__init__(vacancies)
 
