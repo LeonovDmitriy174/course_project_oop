@@ -7,14 +7,14 @@ class AbstractClassAPI(ABC):
     """
     Абстрактный класс-родитель для работы с разными площадками
     """
-    vacancies = None
-    user_vacancies = None
 
-    def __init__(self, url):
+    def __init__(self, url, user_vacancies):
         self.url = url
+        self.vacancies = None
+        self.user_vacancies = user_vacancies
 
     @abstractmethod
-    def get_vacancies(self, user_vacancies):
+    def get_vacancies(self):
         pass
 
 
@@ -22,10 +22,10 @@ class Headhunter(AbstractClassAPI):
     """
     Класс для получения вакансий исключительно с сайта HeadHunter
     """
-    def __init__(self, url='https://api.hh.ru/vacancies'):
-        super().__init__(url)
+    def __init__(self, user_vacancies, url='https://api.hh.ru/vacancies'):
+        super().__init__(url, user_vacancies)
 
-    def get_vacancies(self, user_vacancies):
+    def get_vacancies(self):
         response = requests.get(
             f'{self.url}?per_page=100&text={self.user_vacancies}&order_by=relevance&currency=RUR')
         return response.json()
