@@ -7,7 +7,7 @@ def user_interaction():
           'Я помогу подобрать самые интересные предложения на HeadHunter по вашему запросу\n')
     user_vacancies = input('Введите описание, интересующей вас вакансии: ').strip()
 
-    vacancies = Headhunter(user_vacancies).vacancies['items']
+    vacancies = Headhunter('https://api.hh.ru/vacancies').get_vacancies(user_vacancies)['items']
     save_vac = SaveInfoJson(vacancies)
     save_vac.add_vacancies_to_file()
 
